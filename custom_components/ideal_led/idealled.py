@@ -4,7 +4,7 @@ import asyncio
 from homeassistant.components import bluetooth
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.components.light import ColorMode
-from Crypto.Cipher import AES
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from bleak.backends.device import BLEDevice
 from bleak.backends.service import BleakGATTCharacteristic, BleakGATTServiceCollection
 from bleak.exc import BleakDBusError
@@ -94,6 +94,18 @@ WrapFuncType = TypeVar("WrapFuncType", bound=Callable[..., Any])
 def bytearray_to_hex_format(byte_array):
     hex_strings = ["0x{:02x}".format(byte) for byte in byte_array]
     return hex_strings
+
+
+def _aes_ecb_encrypt(key: bytes, data) -> bytes:
+    """AES-128 ECB encrypt. Input must be a multiple of the 16 byte block size."""
+    encryptor = Cipher(algorithms.AES(key), modes.ECB()).encryptor()
+    return encryptor.update(bytes(data)) + encryptor.finalize()
+
+
+def _aes_ecb_decrypt(key: bytes, data) -> bytes:
+    """AES-128 ECB decrypt. Input must be a multiple of the 16 byte block size."""
+    decryptor = Cipher(algorithms.AES(key), modes.ECB()).decryptor()
+    return decryptor.update(bytes(data)) + decryptor.finalize()
 
 
 def retry_bluetooth_connection_error(func: WrapFuncType) -> WrapFuncType:
@@ -233,8 +245,7 @@ class IDEALLEDInstance:
     async def _write(self, data: bytearray):
         """Send command to device and read response."""
         await self._ensure_connected()
-        cipher = AES.new(SECRET_ENCRYPTION_KEY, AES.MODE_ECB)
-        ciphered_data = cipher.encrypt(data)
+        ciphered_data = _aes_ecb_encrypt(SECRET_ENCRYPTION_KEY, data)
         await self._write_while_connected(ciphered_data)
 
     async def _write_colour_data(self, data: bytearray):
@@ -256,8 +267,7 @@ class IDEALLEDInstance:
         # This doesn't work.  I can't get the controller to send notifications.
         # Updated:  Looks like newer controllers do send notifications.
         """Handle BLE notifications from the device.  Update internal state to reflect the device state."""
-        cipher = AES.new(SECRET_ENCRYPTION_KEY, AES.MODE_ECB)
-        clear_data = cipher.decrypt(data)
+        clear_data = _aes_ecb_decrypt(SECRET_ENCRYPTION_KEY, data)
         LOGGER.debug(
             f"BLE Notification raw: {self.name}: {bytearray_to_hex_format(data)}"
         )
