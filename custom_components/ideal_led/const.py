@@ -31,3 +31,16 @@ COMMAND_LOOKUP = {
     "TYPE1" : ['R002-15', 'R003-01', 'R004-01', 'R005-03'],
     "TYPE2" : ['R011-04', 'R012-01']
 }
+
+# Some newer hardware batches report the same short model string as older
+# devices (e.g. R004-01) but actually speak a different protocol.  When that
+# happens we can't rely on the model->type lookup above, so we match on the
+# full firmware version string (or a prefix of it) instead.  This is checked
+# before COMMAND_LOOKUP.  Match is a case-sensitive "startswith" against the
+# full firmware string as read from the device.
+#   - issue #32: TR2503R004-01 is a 2025 batch that reports model R004-01 but
+#     responds to the TYPE2 command set (confirmed by decrypting the bytes the
+#     device ACKs: TURN / SGLS).
+FIRMWARE_OVERRIDE = {
+    "TR2503R004-01" : "TYPE2",
+}

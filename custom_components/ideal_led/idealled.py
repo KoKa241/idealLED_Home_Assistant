@@ -21,7 +21,7 @@ from collections.abc import Callable
 import traceback
 import logging
 import colorsys
-from .const import COMMAND_BYTES, COMMAND_LOOKUP
+from .const import COMMAND_BYTES, COMMAND_LOOKUP, FIRMWARE_OVERRIDE
 
 LOGGER = logging.getLogger(__name__)
 
@@ -220,6 +220,19 @@ class IDEALLEDInstance:
             return None
         if isinstance(self._firmware_version, bytearray):
             self._firmware_version = self._firmware_version.decode('utf-8').strip('\x00')
+        # Some newer batches report the same short model string as older devices
+        # but use a different protocol.  Check the full firmware string against
+        # the override table before falling back to the model->type lookup.
+        override = next(
+            (t for fw, t in FIRMWARE_OVERRIDE.items() if self._firmware_version.startswith(fw)),
+            None,
+        )
+        if override is not None:
+            self._command_type = override
+            LOGGER.debug(
+                f"Firmware {self._firmware_version} matched override -> {override}"
+            )
+            return self._firmware_version
         model = self._firmware_version
         first_r_index = model.find('R')
         second_r_index = model.find('R', first_r_index + 1)
