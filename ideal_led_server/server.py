@@ -69,7 +69,7 @@ async def control_device(request):
         
         if mac not in instances:
             fw_version = data.get("fw_version", "0.0.1")
-            delay = data.get("delay", 120)
+            delay = data.get("delay", 7200)
             instances[mac] = IDEALLEDInstance(mac, delay=delay, fw_version=fw_version)
             
         instance = instances[mac]

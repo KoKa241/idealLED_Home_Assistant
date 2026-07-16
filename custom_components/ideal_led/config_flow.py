@@ -154,7 +154,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     
     async def async_step_user(self, user_input=None):
         errors = {}
-        options = self._config_entry.options or {CONF_DELAY: 120}
+        options = self._config_entry.options or {CONF_DELAY: 7200}
         if user_input is not None:
             return self.async_create_entry(title="", data={CONF_DELAY: user_input[CONF_DELAY]})
 

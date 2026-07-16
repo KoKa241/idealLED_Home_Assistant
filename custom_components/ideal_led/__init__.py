@@ -15,7 +15,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up from a config entry."""
     LOGGER.debug(f"Config data: {entry.data}")
     LOGGER.debug(f"Config options: {entry.options}")
-    delay = entry.options.get(CONF_DELAY, None) or entry.data.get(CONF_DELAY, 60)
+    delay = entry.options.get(CONF_DELAY, None) or entry.data.get(CONF_DELAY, 7200)
     fw_version = entry.data.get("fw_version", "0.0.1")
     host = entry.data.get(CONF_HOST, "127.0.0.1")
     port = entry.data.get(CONF_PORT, 8282)
