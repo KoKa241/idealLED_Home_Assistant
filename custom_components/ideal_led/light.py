@@ -132,7 +132,7 @@ class IDEALLEDLight(LightEntity):
 
     @property
     def should_poll(self):
-        return False
+        return True
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         LOGGER.info("Turn on called.  kwargs: "+str(kwargs))

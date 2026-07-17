@@ -389,7 +389,7 @@ class IDEALLEDInstance:
         green = int(green)
         blue  = int(blue)
 
-        rgb_packet = COMMAND_BYTES[self._command_type]["rgb_bytes"]
+        rgb_packet = bytearray(COMMAND_BYTES[self._command_type]["rgb_bytes"])
         rgb_packet[COMMAND_BYTES[self._command_type]["red_offset"]]   = red
         rgb_packet[COMMAND_BYTES[self._command_type]["green_offset"]] = green
         rgb_packet[COMMAND_BYTES[self._command_type]["blue_offset"]]  = blue
@@ -413,7 +413,7 @@ class IDEALLEDInstance:
         brightness_pct = int(brightness /255 * 100)
         # packet = bytearray.fromhex("0A 4D 55 4C 54 08 00 64 50 07 32 00 00 00 00 00")
         # packet = bytearray.fromhex("06 4C 49 47 48 54 0C 00 00 00 00 00 00 00 00 00")
-        packet = COMMAND_BYTES[self._command_type]["effects_bytes"]
+        packet = bytearray(COMMAND_BYTES[self._command_type]["effects_bytes"])
         if self._command_type == "TYPE1":
             await self._write(packet)
             await self.write_colour_data_type1(effect_id)
@@ -505,7 +505,7 @@ class IDEALLEDInstance:
     async def turn_on(self):
         # packet = bytearray.fromhex("05 54 55 52 4E 01 00 00 00 00 00 00 00 00 00 00")
         # packet = bytearray.fromhex("06 4C 45 44 4F 4E 00 00 00 00 00 00 00 00 00 00")
-        packet = COMMAND_BYTES[self._command_type]["turn_on_bytes"]
+        packet = bytearray(COMMAND_BYTES[self._command_type]["turn_on_bytes"])
         await self._write(packet)
         self._is_on = True
 
@@ -513,7 +513,7 @@ class IDEALLEDInstance:
     async def turn_off(self):
         # packet = bytearray.fromhex("05 54 55 52 4E 01 00 00 00 00 00 00 00 00 00 00")
         # packet = bytearray.fromhex("06 4C 45 44 4F 46 46 00 00 00 00 00 00 00 00 00")
-        packet = COMMAND_BYTES[self._command_type]["turn_off_bytes"]
+        packet = bytearray(COMMAND_BYTES[self._command_type]["turn_off_bytes"])
         await self._write(packet)
         self._is_on = False
 

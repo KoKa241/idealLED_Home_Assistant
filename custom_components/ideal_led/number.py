@@ -59,6 +59,11 @@ class IDEALLEDSpeedSlider(NumberEntity):
         )
 
     @property
+    def should_poll(self) -> bool:
+        """Return True if entity has to be polled for state."""
+        return False
+
+    @property
     def native_value(self) -> float:
         """Return the current effect speed."""
         return self._instance._effect_speed
